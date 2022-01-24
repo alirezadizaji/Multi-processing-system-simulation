@@ -1,2 +1,2 @@
-# System-multi-processing-simulation
+# Multi-processing-system-simulation
 Computer simulation course project

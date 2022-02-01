@@ -12,8 +12,8 @@ class Core:
         self._entity: List[Entity] = list()
 
     def assign_entity(self, entity: Entity, t_now: float):
-        entity.t_service = self._t_services.pop[0]
-        entity.t_start_service = t_now
+        entity.t_service_in_core = self._t_services.pop[0]
+        entity.t_start_service_in_core = t_now
         self._entity = [entity]
         self.busy = True
 
@@ -21,7 +21,7 @@ class Core:
         return len(self._entity) > 0    
     
     def check_entity_done(self, t_now):
-        if self._entity[0].t_start_service + self._entity[0].t_service <= t_now:
+        if self._entity[0].t_start_service_in_core + self._entity[0].t_service_in_core <= t_now:
             entity = self._entity.pop()
             entity.stat = EntityStatus.DONE
             return entity

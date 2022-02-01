@@ -12,7 +12,8 @@ class Entity:
     def __init__(self,
             t_arrival: float,
             t_work_deadline: float,
-            ent_type: EntityType):
+            ent_type: EntityType,
+            name: str):
 
         super(Entity, self).__init__()
 
@@ -31,9 +32,15 @@ class Entity:
 
         self.t_start_in_queue: float = None
 
-        self.t_service: float = 0
+        self.t_service_in_core: float = 0
 
-        self.t_start_service: float = None
+        self.t_start_service_in_core: float = None
+
+        self.t_service_in_scheduler: float = 0
+
+        self.t_start_service_in_scheduler: float = 0
 
         self.stat: EntityStatus = EntityStatus.IN_PROG
+
+        self._name = name
         

@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 import numpy as np
 
@@ -32,17 +32,25 @@ class System:
     def simulate(self):
 
         while len(self._done_entities) < self._total_num_entities:
-
+            q_entities: List[Entity] = list()
             while self._entities[0].t_arrival <= self.t:
                 entity = self._entities.pop[0]
                 self._scheduler.enter(entity, self.t)            
             
-            entity = self._scheduler.exit(self.t)
+            self._scheduler.assign_entity(self.t)
+            q_entities = q_entities + self._scheduler.check_working_deadline(self.t)
+            entity = self._scheduler.check_entity_in_service(self.t)
             if entity is not None:
                 idx = self.choose_server()
                 self._servers[idx].add_entity(entity)
             
             for s in self._servers:
-                s.check_cores(self.t)
+                q_entities = q_entities + s.check_working_deadline(self.t)
+                d_entities = s.check_cores(self.t)
+                for e in d_entities:
+                    self._done_entities.append(e)
 
+            for e in q_entities:
+                self._done_entities.append(e)
+                
             self.t += self._t_scale

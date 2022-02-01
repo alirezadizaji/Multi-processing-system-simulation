@@ -28,5 +28,8 @@ class Server:
 
         return entities
     
+    def check_working_deadline(self, t_now: float):
+        return self._queue.check_work_deadline()
+
     def queue_len(self):
         return len(self._queue)

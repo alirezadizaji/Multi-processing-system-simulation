@@ -44,12 +44,13 @@ class Environment:
         ts_interval = np.random.exponential(1.0 / self._ent_gen_rate, size=self._total_num_entities)
         ts_arrival = np.cumsum(ts_interval)
         ts_work_deadline = np.random.exponential(self._ent_work_dead_mean, size=self._total_num_entities)
+        names = [f"Entity{idx}" for idx in range(self._total_num_entities)]
         chances = np.random.uniform(size=self._total_num_entities)
 
-        def _init_entity(t_arrival, t_work_deadline, chance):
+        def _init_entity(t_arrival, t_work_deadline, chance, name):
             e_type = EntityType.TYPE1 if chance < 0.1 else EntityType.TYPE2
-            return Entity(t_arrival, t_work_deadline, e_type)
+            return Entity(t_arrival, t_work_deadline, e_type, name)
 
-        entities = np.vectorize(_init_entity)(ts_arrival, ts_work_deadline, chances)
+        entities = np.vectorize(_init_entity)(ts_arrival, ts_work_deadline, chances, names)
         
         return entities.tolist()

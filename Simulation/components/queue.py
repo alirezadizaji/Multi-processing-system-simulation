@@ -1,6 +1,7 @@
 from typing import List
 
 from ..enums.entity_type import EntityType
+from ..enums.entity_stat import EntityStatus
 from .entity import Entity
 
 class Queue:
@@ -27,5 +28,20 @@ class Queue:
         except:
             return None
     
+    def check_work_deadline(self, t_now: float):
+        entities: List[Entity] = list()
+
+        idx = 0
+        while idx < len(self._entities):
+            if self._entities[idx].t_arrival + self._entities[idx].t_work_deadline <= t_now:
+                entity: Entity = self._entities.pop(idx)
+                entity.stat = EntityStatus.QUIT
+                entity.t_in_system = t_now - entity.t_arrival
+            else:
+                idx += 1
+        
+        return entities
+
+        
     def is_empty(self):
         return len(self._entities) == 0

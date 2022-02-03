@@ -110,27 +110,29 @@ class System:
         num_entities_in_system = num_entities_in_scheduler + num_entities_not_entered_yet \
                                     + num_entities_done + num_entities_in_servers
         
-        print(f"time: {Clock().t: .2f}, num not entered: {num_entities_not_entered_yet}, num in scheduler: {num_entities_in_scheduler}, num done or expired: {num_entities_done}", flush=True)
+        print(f"time: {Clock().t: .2f}, num not entered: {num_entities_not_entered_yet}, num in scheduler: {num_entities_in_scheduler}, num done or expired: {num_entities_done}, total num: {num_entities_in_system}", flush=True)
     
     
     def report(self):
         """ reports the simulation results """
 
-        num_expired = [0, 0]
-        time_in_system = [0, 0]
-        time_in_queue = [0, 0]
+        num_expired = np.zeros(2, dtype=int)
+        time_in_system = np.zeros((2, self._total_num_entities))
+        time_in_queue = np.zeros_like(time_in_system)
         
-        for e in self._done_entities:
+        for i, e in enumerate(self._done_entities):
 
-            idx = 0 if e.type == EntityType.TYPE1 else 1
+            e_type = 0 if e.type == EntityType.TYPE1 else 1
             
-            time_in_system[idx] += e.t_in_system
+            time_in_system[e_type][i] = e.t_in_system
             
             if e.stat == EntityStatus.EXPIRED:
-                num_expired[idx] += 1
+                num_expired[e_type] += 1
             
-            time_in_queue[idx] += e.t_in_queue
+            time_in_queue[e_type][i] = e.t_in_queue
         
+        print("\n***")
         print(f"number of expired entities (per type): {num_expired}", flush=True)
-        print(f"time being in system (per type): {time_in_system}", flush=True)
-        print(f"time being in queue (per type): {time_in_queue}", flush=True)
+        print(f"Avg time being in system (per type): {time_in_system.mean(1)}", flush=True)
+        print(f"Avg time being in queue (per type): {time_in_queue.mean(1)}", flush=True)
+        print("***")

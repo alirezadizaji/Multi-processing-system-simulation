@@ -56,6 +56,9 @@ class Core:
                 self.entity_in_serv[0].t_service_in_core <= Clock().t:
             
             entity = self.entity_in_serv.pop()
+            
+            # set related attributes to when status becomes DONE
+            entity.t_in_system = Clock().t - entity.t_arrival
             entity.stat = EntityStatus.DONE
 
             return entity

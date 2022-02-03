@@ -12,8 +12,7 @@ if __name__ == "__main__":
     total_num_entities = 10000
 
     # entity generation rate (poi), work deadline mean (exp), service rate at scheduler (poi)
-    # lamda, alpha, mu = map(float, input().split())
-    lamda, alpha, mu = 0.5, 10, 2
+    lamda, alpha, mu = map(float, input().split())
     
     environment = Environment(total_num_entities, lamda, alpha)
     entites = environment.create_entites()
@@ -24,8 +23,7 @@ if __name__ == "__main__":
     for i in range(num_servers):
 
         # service rate (exp) for each core
-        # core_serv_rates = map(float, input().split())
-        core_serv_rates = [1, 1, 1]
+        core_serv_rates = map(float, input().split())
 
         cores: List[Core] = list()
         for rate in core_serv_rates:

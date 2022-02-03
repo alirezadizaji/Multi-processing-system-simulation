@@ -67,6 +67,7 @@ class Queue:
                 entity.stat = EntityStatus.EXPIRED
                 entity.t_in_system = Clock().t - entity.t_arrival
 
+
                 expired_entities.append(entity)
 
             else:

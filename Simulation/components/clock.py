@@ -5,7 +5,6 @@ class Clock:
     """ the system clock """
 
     def __init__(self):
-        super(Clock, self).__init__()
 
         self.t: float = 0.0
         """ current time in system """

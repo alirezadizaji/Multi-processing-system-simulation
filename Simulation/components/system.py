@@ -35,10 +35,10 @@ class System:
         self._done_entities: List[Entity] = list()
         """ a list of entities completely DONE or EXPIRED """
 
-        self._scheduler: Scheduler = Scheduler(rate=0.4)
+        self._scheduler: Scheduler = scheduler
         """ time scheduler of system """
         
-        self._servers: List[Server] = [Server() for i in range(5)]
+        self._servers: List[Server] = servers
         """ servers of the system possessing several cores for processing """
 
 
@@ -50,7 +50,7 @@ class System:
         # pick the server with minimum queue length
         idx = np.argmin(servers_queue_len)
 
-        candidate_servers = np.where(servers_queue_len == servers_queue_len[idx])
+        candidate_servers = np.argwhere(servers_queue_len == servers_queue_len[idx]).ravel()
 
         # if one server remains select it O.W. randomly choose among them
         idx = np.random.choice(candidate_servers)
@@ -73,7 +73,7 @@ class System:
             
             # examine entity in service and expired entities of the scheduler
             self._scheduler.set_entity_in_serv()
-            expired_entities = expired_entities + self._scheduler.check_working_deadline(self.t)
+            expired_entities = expired_entities + self._scheduler.check_working_deadline()
             entity = self._scheduler.check_entity_in_serv_done()
 
             # if scheduler returns a processed entity, then assigns it to a server
@@ -91,15 +91,9 @@ class System:
 
             for e in expired_entities:
                 self._done_entities.append(e)
-                
 
-            num_entities = len(self._scheduler.queue.entities) + len(self._scheduler.entity_in_serv)
-            num_entities += len(self.tot_entities) + len(self._done_entities)
-            for s in self._servers:
-                num_entities += len(s.queue.entities)
-                for c in s.cores:
-                    num_entities += len(c.entity_in_serv)
-    
+            Clock().pass_time()
+
     def _test(self):
         """ it tests whether the number of entities currently in system and 
         should be in system are equivalent or not """
@@ -120,24 +114,27 @@ class System:
         assert num_entities_in_system == self._total_num_entities, \
                 f"expected {self._total_num_entities}; got {num_entities_in_system} instead."
 
+        print(f"time: {Clock().t: .2f}, num not entered: {num_entities_not_entered_yet}, num in scheduler: {num_entities_in_scheduler}, num done or expired: {num_entities_done}", flush=True)
+    
+    
     def report(self):
         """ reports the simulation results """
 
-        expired = [0, 0]
-        in_system = [0, 0]
-        t_in_queue = [0, 0]
+        num_expired = [0, 0]
+        time_in_system = [0, 0]
+        time_in_queue = [0, 0]
         
         for e in self._done_entities:
 
             idx = 0 if e.type == EntityType.TYPE1 else 1
             
-            in_system[idx] += e.t_in_system
+            time_in_system[idx] += e.t_in_system
             
             if e.stat == EntityStatus.EXPIRED:
-                expired[idx] += 1
+                num_expired[idx] += 1
             
-            t_in_queue[idx] += e.t_in_queue
+            time_in_queue[idx] += e.t_in_queue
         
-        print(expired)
-        print(in_system)
-        print(t_in_queue)
+        print(f"number of expired entities (per type): {num_expired}", flush=True)
+        print(f"time being in system (per type): {time_in_system}", flush=True)
+        print(f"time being in queue (per type): {time_in_queue}", flush=True)

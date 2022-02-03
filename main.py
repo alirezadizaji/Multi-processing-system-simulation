@@ -2,24 +2,30 @@ from typing import List
 
 import numpy as np
 
-from Simulation.components import  Core, Environment, Server, System
+from Simulation.components import  Core, Environment, Scheduler, Server, System
     
 if __name__ == "__main__":
     np.random.seed(12345)
 
     num_cores = 3
     num_servers = 5
-    total_num_entities = 1000000
+    total_num_entities = 10000
 
     # entity generation rate (poi), work deadline mean (exp), service rate at scheduler (poi)
-    lamda, alpha, mu = map(float, input().split())
+    # lamda, alpha, mu = map(float, input().split())
+    lamda, alpha, mu = 0.5, 10, 2
     
-    servers: List[Server] = list()
+    environment = Environment(total_num_entities, lamda, alpha)
+    entites = environment.create_entites()
 
+    scheduler = Scheduler(mu, total_num_entities)
+
+    servers: List[Server] = list()
     for i in range(num_servers):
 
         # service rate (exp) for each core
-        core_serv_rates = map(float, input().split())
+        # core_serv_rates = map(float, input().split())
+        core_serv_rates = [1, 1, 1]
 
         cores: List[Core] = list()
         for rate in core_serv_rates:
@@ -28,9 +34,7 @@ if __name__ == "__main__":
             )
 
         servers.append(Server(cores))
-    
-    environment = Environment(10000, 5, 0.4)
-    entites = environment.create_entites()
-    system = System(entites, 0.1)
+
+    system = System(entites, scheduler, servers)
     system.simulate()
     system.report()

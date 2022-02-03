@@ -6,7 +6,7 @@ from ..enums.entity_type import EntityType
 from .entity import Entity
 
 class Environment:
-    """ the outer space of system from where the entities come
+    """ the outer space of system from where the entities are generated
     
     Args:
         total_num_entities (int): total number of entities to be generated for a simulation
@@ -44,13 +44,25 @@ class Environment:
         ts_interval = np.random.exponential(1.0 / self._ent_gen_rate, size=self._total_num_entities)
         ts_arrival = np.cumsum(ts_interval)
         ts_work_deadline = np.random.exponential(self._ent_work_dead_mean, size=self._total_num_entities)
-        names = [f"Entity{idx}" for idx in range(self._total_num_entities)]
+        
         chances = np.random.uniform(size=self._total_num_entities)
 
-        def _init_entity(t_arrival, t_work_deadline, chance, name):
-            e_type = EntityType.TYPE1 if chance < 0.1 else EntityType.TYPE2
-            return Entity(t_arrival, t_work_deadline, e_type, name)
+        def _init_entity(t_arrival: float, t_work_deadline: float, chance: float):
+            """ returns an entity initiated its time arrival, work deadline and type
+            
+            Args:
+                t_arrival (float): time arrival into system
+                t_work_deadline (float): work deadline period
+                chance (float): if less than self._ent_type1_ratio then its type is one, O.W. two
+            """
 
-        entities = np.vectorize(_init_entity)(ts_arrival, ts_work_deadline, chances, names)
+            if chance < self._ent_type1_ratio:
+                e_type = EntityType.TYPE1
+            else:
+                e_type = EntityType.TYPE2
+
+            return Entity(t_arrival, t_work_deadline, e_type)
+
+        entities = np.vectorize(_init_entity)(ts_arrival, ts_work_deadline, chances)
         
         return entities.tolist()

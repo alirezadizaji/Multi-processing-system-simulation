@@ -7,29 +7,59 @@ from .entity import Entity
 from .queue import Queue
 
 class Server:
-    def __init__(self, core_rates=[0.1, 0.2, 0.3]):
-        self._cores: List[Core] = [Core(rate) for rate in core_rates]
-        self._queue: Queue = Queue()
+    """ server contains several cores for processing and a queue for waiting list 
     
-    def add_entity(self, entity, t_now):
-        self._queue.append(entity, t_now)
+    Args:
+        cores (List[Core]): list of cores
+    """
+    def __init__(self, cores: List[Core]):
+
+        self.cores: List[Core] = cores
+        """ list of cores within the server """
+
+        self.queue: Queue = Queue()
+        """ the queue within the server """
+
+
+    def enter_entity(self, entity: Entity):
+        """ enters an entity into the server; indeed at first it directly enters into the queue """
+
+        self.queue.add(entity)
+
     
-    def check_cores(self, t_now):
-        entities: List[Entity] = list()
-        for core in self._cores:
+    def check_cores(self):
+        """ check the current status of cores; whether they are busy or not and if not,
+        assign a new entity for them (if queue is not empty). also if any entity has been processed 
+        then return it
+        
+        Returns:
+            done_entities (List[Entity]): a list of processed entities by cores
+        """
+        
+        done_entities: List[Entity] = list()
+        
+        for core in self.cores:
+            
             if not core.is_busy():
-                if not self._queue.is_empty():
-                    entity = self._queue.pop(t_now)
-                    core.assign_entity(entity, t_now)
+
+                # assign a new entity to the core if queue is not empty
+                if not self.queue.is_empty():
+                    entity = self.queue.pop()
+                    core.set_entity_in_serv(entity)
+
             else:
-                entity = core.check_entity_done(t_now)
+                
+                # check whether the entity in service is done with processing or not
+                entity = core.check_entity_in_serv_done()
+
                 if entity is not None:
-                    entities.append(entity)
+                    done_entities.append(entity)
 
-        return entities
+        return done_entities
+
     
-    def check_working_deadline(self, t_now: float):
-        return self._queue.check_work_deadline()
+    def check_working_deadline(self):
+        """ returns a list of entities whose work deadline time comes and they will leave 
+        the system without being processed by cores """
 
-    def queue_len(self):
-        return len(self._queue)
+        return self.queue.check_work_deadline()

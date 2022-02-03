@@ -1,3 +1,4 @@
+import time
 from typing import Dict, List
 
 import numpy as np
@@ -41,6 +42,9 @@ class System:
         self._servers: List[Server] = servers
         """ servers of the system possessing several cores for processing """
 
+        self._iteration: int = 0
+        """ number of iterations during simulation """
+
 
     def choose_server(self):
         """ choose a server to assign an entity for it """
@@ -62,19 +66,19 @@ class System:
 
         while len(self._done_entities) < self._total_num_entities:
             
-            self._log()
-
             expired_entities: List[Entity] = list()
             
             # add entities into the system if their arrival time has come
             while self.tot_entities and self.tot_entities[0].t_arrival <= Clock().t:
                 entity = self.tot_entities.pop(0)
-                self._scheduler.enter(entity)            
+                self._scheduler.enter(entity)
             
             # examine entity in service and expired entities of the scheduler
             self._scheduler.set_entity_in_serv()
             expired_entities = expired_entities + self._scheduler.check_working_deadline()
             entity = self._scheduler.check_entity_in_serv_done()
+
+            self._scheduler.queue.record_length()
 
             # if scheduler returns a processed entity, then assigns it to a server
             if entity is not None:
@@ -89,8 +93,13 @@ class System:
                 for done_entity in s.check_cores():
                     self._done_entities.append(done_entity)
 
+                s.queue.record_length()
+
             for e in expired_entities:
                 self._done_entities.append(e)
+
+            self._log()
+            self._iteration += 1
 
             Clock().pass_time()
 
@@ -132,7 +141,12 @@ class System:
             time_in_queue[e_type][i] = e.t_in_queue
         
         print("\n***")
-        print(f"number of expired entities (per type): {num_expired}", flush=True)
-        print(f"Avg time being in system (per type): {time_in_system.mean(1)}", flush=True)
-        print(f"Avg time being in queue (per type): {time_in_queue.mean(1)}", flush=True)
+        print(f"percentage of expired entities per type (%): {num_expired * 100 / self._total_num_entities}, per case (%): {num_expired.sum() * 100 / self._total_num_entities}", flush=True)
+        print(f"Avg time being in system per type (sec): {time_in_system.mean(1)}, per case (sec): {time_in_system.mean()}", flush=True)
+        print(f"Avg time being in queue per type (sec): {time_in_queue.mean(1)}, per case (sec): {time_in_queue.mean()}", flush=True)
+        print(f"Avg queue length in scheduler: {self._scheduler.queue.total_length / self._iteration}")
+        
+        for i, s in enumerate(self._servers):
+            print(f"Avg queue length in server{i+1}: {s.queue.total_length / self._iteration}")
+
         print("***")

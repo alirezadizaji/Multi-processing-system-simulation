@@ -13,6 +13,9 @@ class Queue:
         self.entities: List[Entity] = list()
         """ entities in waiting list """
 
+        self.total_length: int = 0
+        """ total length of queue during the simulation """
+        
     def add(self, entity: Entity):
         """ add a new entity into queue """
 
@@ -75,6 +78,10 @@ class Queue:
         
         return expired_entities
 
+    def record_length(self):
+        """ record queue length """
+
+        self.total_length += self.queue_len()
         
     def is_empty(self):
         """ returns whether the queue is empty or not """

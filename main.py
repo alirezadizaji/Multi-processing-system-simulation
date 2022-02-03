@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     num_cores = 3
     num_servers = 5
-    total_num_entities = 10000
+    total_num_entities = 1000000
 
     # entity generation rate (poi), work deadline mean (exp), service rate at scheduler (poi)
     lamda, alpha, mu = map(float, input().split())

@@ -62,7 +62,7 @@ class System:
 
         while len(self._done_entities) < self._total_num_entities:
             
-            self._test()
+            self._log()
 
             expired_entities: List[Entity] = list()
             
@@ -94,9 +94,8 @@ class System:
 
             Clock().pass_time()
 
-    def _test(self):
-        """ it tests whether the number of entities currently in system and 
-        should be in system are equivalent or not """
+    def _log(self):
+        """ it prints current status of simulation """
 
         num_entities_in_scheduler = self._scheduler.queue.queue_len() + len(self._scheduler.entity_in_serv)
         num_entities_not_entered_yet = len(self.tot_entities)
@@ -111,9 +110,6 @@ class System:
         num_entities_in_system = num_entities_in_scheduler + num_entities_not_entered_yet \
                                     + num_entities_done + num_entities_in_servers
         
-        assert num_entities_in_system == self._total_num_entities, \
-                f"expected {self._total_num_entities}; got {num_entities_in_system} instead."
-
         print(f"time: {Clock().t: .2f}, num not entered: {num_entities_not_entered_yet}, num in scheduler: {num_entities_in_scheduler}, num done or expired: {num_entities_done}", flush=True)
     
     

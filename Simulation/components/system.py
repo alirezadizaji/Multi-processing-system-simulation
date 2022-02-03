@@ -142,8 +142,8 @@ class System:
         
         print("\n***")
         print(f"percentage of expired entities per type (%): {num_expired * 100 / self._total_num_entities}, per case (%): {num_expired.sum() * 100 / self._total_num_entities}", flush=True)
-        print(f"Avg time being in system per type (sec): {time_in_system.mean(1)}, per case (sec): {time_in_system.mean()}", flush=True)
-        print(f"Avg time being in queue per type (sec): {time_in_queue.mean(1)}, per case (sec): {time_in_queue.mean()}", flush=True)
+        print(f"Avg time being in system per type (sec): {time_in_system.mean(1)}, per case (sec): {time_in_system.sum() / self._total_num_entities}", flush=True)
+        print(f"Avg time being in queue per type (sec): {time_in_queue.mean(1)}, per case (sec): {time_in_queue.sum() / self._total_num_entities}", flush=True)
         print(f"Avg queue length in scheduler: {self._scheduler.queue.total_length / self._iteration}")
         
         for i, s in enumerate(self._servers):

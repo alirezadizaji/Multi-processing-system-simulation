@@ -126,13 +126,14 @@ class System:
         """ reports the simulation results """
 
         num_expired = np.zeros(2, dtype=int)
+        num_ent_type = np.zeros(2, dtype=int)
         time_in_system = np.zeros((2, self._total_num_entities))
         time_in_queue = np.zeros_like(time_in_system)
-        
+
         for i, e in enumerate(self._done_entities):
 
             e_type = 0 if e.type == EntityType.TYPE1 else 1
-            
+            num_ent_type[e_type] += 1
             time_in_system[e_type][i] = e.t_in_system
             
             if e.stat == EntityStatus.EXPIRED:
@@ -140,10 +141,11 @@ class System:
             
             time_in_queue[e_type][i] = e.t_in_queue
         
+
         print("\n***")
-        print(f"percentage of expired entities per type (%): {num_expired * 100 / self._total_num_entities}, per case (%): {num_expired.sum() * 100 / self._total_num_entities}", flush=True)
-        print(f"Avg time being in system per type (sec): {time_in_system.mean(1)}, per case (sec): {time_in_system.sum() / self._total_num_entities}", flush=True)
-        print(f"Avg time being in queue per type (sec): {time_in_queue.mean(1)}, per case (sec): {time_in_queue.sum() / self._total_num_entities}", flush=True)
+        print(f"percentage of expired entities per type (%): {num_expired * 100 / num_ent_type}, per case (%): {num_expired.sum() * 100 / self._total_num_entities}", flush=True)
+        print(f"Avg time being in system per type (sec): {time_in_system.sum(1) / num_ent_type}, per case (sec): {time_in_system.sum() / self._total_num_entities}", flush=True)
+        print(f"Avg time being in queue per type (sec): {time_in_queue.sum(1) / num_ent_type}, per case (sec): {time_in_queue.sum() / self._total_num_entities}", flush=True)
         print(f"Avg queue length in scheduler: {self._scheduler.queue.total_length / self._iteration}")
         
         for i, s in enumerate(self._servers):

@@ -1,0 +1,62 @@
+command:
+python -m main
+
+test case 1 (1M entity):
+    input:
+        20 10 5
+        100 100 100
+        100 100 100
+        100 100 100
+        100 100 100
+        100 100 100
+
+    output:
+        percentage of expired per type: 92.56% and 99.98%, per case: 99.24%
+        avg time being in system per type: 16.66 and 10.02, per case: 10.68
+        avg time being in queue per type: 1.46 and 2.86, per case: 2.72
+        avg queue length in scheduler: 151.9
+        avg queue length in server1: 8.9186
+        avg queue length in server2: 8.9209
+        avg queue length in server3: 8.9239
+        avg queue length in server4: 8.9222
+        avg queue length in server5: 8.9184
+
+test case 2 (100k entity):
+    input:
+        20 1000 40
+        1 1 1
+        1 1 1
+        1 1 1
+        1 1 1
+        1 1 1
+
+    output:
+        percentage of expired per type: 0.06% and 23.98%, per case: 21.58%
+        avg time being in system per type: 1.4 and 239.06, per case: 215.1
+        avg time being in queue per type: 0.38 and 204.49, per case: 183.91
+        avg queue length in scheduler: 2.1
+        avg queue length in server1: 803.0492
+        avg queue length in server2: 803.8807
+        avg queue length in server3: 803.6544
+        avg queue length in server4: 804.6623
+        avg queue length in server5: 801.2079
+
+test case 3 (100k entity):
+    input:
+        100 100 100
+        0.1 0.1 0.1
+        0.1 0.1 0.1
+        0.1 0.1 0.1
+        0.1 0.1 0.1
+        0.1 0.1 0.1
+
+    output:
+        percentage of expired per type: 0.001% and 12.54%, per case: 11.28%
+        avg time being in system per type: 0.12 and 12.55, per case: 11.3
+        avg time being in queue per type: 0.02 and 11.6, per case: 10.43
+        avg queue length in scheduler: 1100.28
+        avg queue length in server1: 0.1270
+        avg queue length in server2: 0.1292
+        avg queue length in server3: 0.1269
+        avg queue length in server4: 0.1259
+        avg queue length in server5: 0.1343
